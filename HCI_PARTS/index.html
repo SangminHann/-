@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OpenCV_오답노트</title>
-
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -13,7 +12,6 @@
       <div class="pagelogo">
         <img src="img/logo.png" class="logo" />
       </div>
-
       <input
         id="checkbox1"
         type="checkbox"
@@ -47,7 +45,7 @@
       function checkOnlyOne(element) {
         const checkboxes = document.getElementsByName("problemType");
 
-        checkboxes.forEach(cb => {
+        checkboxes.forEach((cb) => {
           cb.checked = false;
         });
 
@@ -59,17 +57,33 @@
         const checkbox2 = document.getElementById("checkbox2");
 
         if (inputFile.files.length > 0) {
-          var file = inputFile.files[0];
+          var files = inputFile.files;
+          var imageDataList = [];
           var reader = new FileReader();
+          var counter = 0;
+
           reader.onload = function (e) {
             var imageData = e.target.result;
-            if (checkbox1.checked) {
-              window.location.href = "note.html#" + imageData;
-            } else if (checkbox2.checked) {
-              window.location.href = "note1.html#" + imageData;
+            imageDataList.push(imageData);
+            counter++;
+
+            if (counter === files.length) {
+              var encodedDataList = imageDataList.map(function (data) {
+                return encodeURIComponent(data);
+              });
+
+              var encodedDataString = encodedDataList.join(",");
+              if (checkbox1.checked) {
+                window.location.href = "note.html#" + encodedDataString;
+              } else if (checkbox2.checked) {
+                window.location.href = "note1.html#" + encodedDataString;
+              }
+            } else {
+              reader.readAsDataURL(files[counter]);
             }
           };
-          reader.readAsDataURL(file);
+
+          reader.readAsDataURL(files[counter]);
         }
       }
     </script>

@@ -12,13 +12,18 @@ h1 {
   display: flex;
   justify-content: center;
   height: 100vh;
+  flex-wrap: wrap;
 }
 .left {
-  flex: 1;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 50%;
   text-align: center;
 }
 .right {
-  flex: 1;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 50%;
 }
 button {
   background-color: #e563cd;
@@ -31,8 +36,8 @@ button:hover {
   opacity: 0.8;
 }
 
-#SolvingArea,
-#WrongReason {
+.SolvingArea,
+.WrongReason {
   background-color: #f0f0f0;
 }
 
