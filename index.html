@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenCV_오답노트</title>
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div>
+      <div class="pagelogo">
+        <img src="img/logo.png" class="logo" />
+      </div>
+
+      <input
+        id="checkbox1"
+        type="checkbox"
+        name="problemType"
+        value="moigosa"
+        onclick="checkOnlyOne(this)"
+      />
+      모의고사
+      <input
+        id="checkbox2"
+        type="checkbox"
+        name="problemType"
+        value="suneungComplete"
+        onclick="checkOnlyOne(this)"
+      />
+      수능완성
+      <br /><br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <input
+        type="file"
+        id="fileUpload"
+        accept="image/png, .pdf"
+        multiple
+      /><br /><br /><br />
+      <button type="submit" id="createNoteBtn" onclick="createNoteBtn()">
+        오답노트 만들기
+      </button>
+    </div>
+
+    <script>
+      function checkOnlyOne(element) {
+        const checkboxes = document.getElementsByName("problemType");
+
+        checkboxes.forEach(cb => {
+          cb.checked = false;
+        });
+
+        element.checked = true;
+      }
+      function createNoteBtn() {
+        var inputFile = document.getElementById("fileUpload");
+        const checkbox1 = document.getElementById("checkbox1");
+        const checkbox2 = document.getElementById("checkbox2");
+
+        if (inputFile.files.length > 0) {
+          var file = inputFile.files[0];
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var imageData = e.target.result;
+            if (checkbox1.checked) {
+              window.location.href = "note.html#" + imageData;
+            } else if (checkbox2.checked) {
+              window.location.href = "note1.html#" + imageData;
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    </script>
+  </body>
+</html>

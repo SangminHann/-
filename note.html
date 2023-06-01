@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenCV_오답노트</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="left">
+        <h2>틀린문제(모의고사)</h2>
+        <div id="wrongquestions">
+          <img id="questionImage" src="" />
+        </div>
+        <h2>틀린이유</h2>
+        <textarea id="WrongReason" rows="20" cols="70"></textarea>
+        <div id="indexpage-content"></div>
+      </div>
+      <div class="right">
+        <h2>풀이 과정</h2>
+        <textarea id="SolvingArea" rows="43" cols="70"></textarea>
+      </div>
+    </div>
+
+    <script>
+      window.onload = function () {
+        var imageData = window.location.hash.substring(1);
+
+        var imgElement = document.getElementById("questionImage");
+        imgElement.src = imageData;
+      };
+    </script>
+  </body>
+</html>
