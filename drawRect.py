@@ -1,18 +1,54 @@
 import cv2
 import numpy as np
+import detect as det
+
+# import projectcode as pro
 
 
 def drawRect(image):
-    ret, binary = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+    img_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    # 빨강색 범위
+    lower_red = np.array([0, 10, 10])
+    upper_red = np.array([10, 255, 255])
+
+    # 이진화
+    worng_img = cv2.inRange(img_hsv, lower_red, upper_red)
+
+    # 블러처리
+    blurred = cv2.GaussianBlur(worng_img, (3, 3), 0)
+
+    # 소벨필터 적용 엣지검출(밝기변화)(엣지는 밝기의 변화가 있는 부분)
+    # x 방향 미분 이미지(엣지의 수직 방향성 검출)
+    gradient_x = cv2.Sobel(blurred, cv2.CV_64F, 1, 0, ksize=3)
+    # y 방향 미분 이미지(엣지의 수평 방향성 검출)
+    gradient_y = cv2.Sobel(blurred, cv2.CV_64F, 0, 1, ksize=3)
+
+    # 미분값 계산해서 변화량 크기 계산(엣지의 강도)
+    gradient_magnitude = np.sqrt(gradient_x**2 + gradient_y**2)
+
+    # 이미지 정규화(0~255)
+    gradient_magnitude = cv2.normalize(
+        gradient_magnitude, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U
+    )
+
+    # close 연산(잘린 객체들 이어붙이기)
+    kernel = np.ones((3, 3), np.uint8)
+
+    gradient_magnitude = cv2.morphologyEx(
+        gradient_magnitude, cv2.MORPH_CLOSE, kernel, iterations=2
+    )
+
+    # contour찾기(o / x 를 찾아냄)
 
     contours, hierarchy = cv2.findContours(
-        binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        gradient_magnitude, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
     )
 
     selected_contours = []
     for contour in contours:
         area = cv2.contourArea(contour)
-        if area > 50:  # 적절한 threshold 값 설정(면적)
+        if area > 40:  # 적절한 threshold 값 설정(면적)
             selected_contours.append(contour)
 
     bounding_rects = []
@@ -48,4 +84,13 @@ def drawRect(image):
         # 잘린 갯수만큼 파일로 저장
         cv2.imwrite(f"scoring_image{i}.jpg", scoring_image)
         i = i + 1
+
     return image
+
+
+img = cv2.imread("problem.jpg")
+
+result = drawRect(img)
+
+cv2.imshow("result", result)
+cv2.waitKey(0)
