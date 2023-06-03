@@ -56,7 +56,6 @@ def find_question_area(page_rl):
     
     #만들어진 좌우 페이지에 문제 영역 표시
     contours_image = cv2.drawContours(page_rl, contours, -1, (0,255,0), 1)
-    
     for c in contours:
 
 		#문제 영역 (x=왼쪽 젤위x 좌표, y=왼쪽 젤위 y좌표, h=높이,w=넓이)
@@ -65,6 +64,7 @@ def find_question_area(page_rl):
         
         #question에 넣기 
         question.append(img_trim)
+    return (contours)
 
 # /혹은 X모양 찾기(좌우로 잘린 풀이된 문제)  
 def find_wrong(page_rl):
@@ -85,11 +85,13 @@ def find_wrong(page_rl):
     
     #일자 라인 추출
     lines = cv2.HoughLinesP(dx,1, np.pi/180,50,minLineLength=80,maxLineGap = 200)
-    print(lines)
     for i in lines:
         cv2.line(page_rl, (int(i[0][0]), int(i[0][1])), (int(i[0][2]), int(i[0][3])), (255, 0, 0), 2)
+        # print(i[0])
+        # cv2.imshow("a",page_rl)
+        # cv2.waitKey(0)
 
-
+    return lines
     # 추출된 라인의 rect을 만들기
     #29~35번째 줄 참고해서 만들고 좌표 저장하기()
    
@@ -101,18 +103,79 @@ draw=src1 = cv2.imread("./test/draw.png")
 right,left=make(origin)
 d_right,d_left=make(draw)
 
+def check_rec(r1, r2):
+    tmp1 = r1
+    tmp2 = r2
+    
+    if r1[1] < r1[3]:
+        tmp1[3] = r1[1]
+        tmp1[1] = r1[3]
+        
+    if r2[1] < r2[3]:
+        tmp1[3] = r1[1]
+        tmp1[1] = r1[3]
+        
+    max_lb_x = max(tmp1[0], tmp2[0])
+    min_lb_y = min(tmp1[1], tmp2[1])
+    min_rt_x = min(tmp1[2], tmp2[2])
+    max_rt_y = max(tmp1[3], tmp2[3])
+    if max_lb_x > min_rt_x or min_lb_y < max_rt_y:
+        return False
+    return True
+    
+
+def make_rec(lines):
+    rect=[]
+    for line in lines:
+        flag = True
+        if rect == None:
+            rect = line[0]
+        else:
+            for r in rect:
+                if check_rec(line[0],r):
+                    flag = False
+                if flag is False:
+                    break
+            if flag:
+                rect.append(line[0])                
+                
+    return rect
+
 #문제영역 표시
-find_question_area(right)
-find_question_area(left)
+def find_qu_sangmin(count, rec, page):
+    cnt_rst = []
+    for c in count:
+        flag = False
+        x, y, w, h = cv2.boundingRect(c)
+        rec_c = [x, y + h, x + w, y]
+        for r in rec:
+            print(r)
+            print(rec_c)
+            if check_rec(rec_c, r):
+                flag = True
+            if flag:
+                cnt_rst.append(c)
+                break
+    cv2.drawContours(page, cnt_rst, -1, (0,0,255), 1)
+    return cnt_rst #틀린문제 좌표
+
+count_l = find_question_area(left)
+count_r = find_question_area(right)
+
+line_r = find_wrong(d_right)
+line_l = find_wrong(d_left)
+
+rect_r = make_rec(line_r)
+rect_l = make_rec(line_l)
+
+find_qu_sangmin(count_l, rect_l, left)
+find_qu_sangmin(count_r, rect_r, right)
 
 cv2.imshow('right',right)
-cv2.imshow('left',left)
-
-find_wrong(d_right)
-find_wrong(d_left)
+cv2.imshow('left',left)      
 
 cv2.imshow('dright',d_right)
 cv2.imshow('dleft',d_left)
 
-
 cv2.waitKey(0)
+
