@@ -1,0 +1,53 @@
+body {
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+h1 {
+  color: #333;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  flex-wrap: wrap;
+}
+.left {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 50%;
+  text-align: center;
+}
+.right {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 50%;
+}
+button {
+  background-color: #e563cd;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+button:hover {
+  opacity: 0.8;
+}
+
+.SolvingArea,
+.WrongReason {
+  background-color: #f0f0f0;
+}
+
+.pagelogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.logo {
+  max-height: 100%;
+  max-width: 100%;
+}

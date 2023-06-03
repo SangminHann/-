@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Note</title>
+    <style>
+      body {
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .left{
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 50%;
+        text-align: center;
+      }
+      .right{
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 50%;
+      }
+      .SolvingArea,
+      .WrongReason {
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="image-container" id="imageContainer"></div>
+
+    <script>
+      window.onload = function () {
+        var imageContainer = document.getElementById("imageContainer");
+        var imageDataString = window.location.hash.substring(1);
+        var encodedDataList = imageDataString.split(",");
+        var decodedDataList = encodedDataList.map(function (data) {
+          return decodeURIComponent(data);
+        });
+
+        for (var i = 0; i < decodedDataList.length; i++) {
+          var divAreaLeft = document.createElement("div");
+          divAreaLeft.setAttribute('class','left');
+          var divAreaRight = document.createElement("div");
+          divAreaRight.setAttribute('class','right');
+          var h2Name1 = document.createElement("h2");
+          h2Name1.innerText = "틀린문제(모의고사)";
+          var h2Name2 = document.createElement("h2");
+          h2Name2.innerText="풀이 과정";
+          var h2Name3 = document.createElement("h2");
+          h2Name3.innerText="틀린이유"
+         
+
+          var img = document.createElement("img");
+          img.src = decodedDataList[i];
+          var imgHeight = img.height;
+          
+          var WrongReason = document.createElement("textarea");
+          WrongReason.setAttribute('rows','20');
+          WrongReason.setAttribute('cols','70');
+          WrongReason.setAttribute('class','WrongReason');
+          var SolvingArea =document.createElement("textarea");
+          SolvingArea.setAttribute('rows',imgHeight*0.103);
+          SolvingArea.setAttribute('cols','70');
+          SolvingArea.setAttribute('class','SolvingArea');
+
+          divAreaLeft.appendChild(h2Name1);
+          divAreaLeft.appendChild(img);
+          divAreaLeft.appendChild(h2Name3);
+          divAreaLeft.appendChild(WrongReason);
+
+          divAreaRight.appendChild(h2Name2);
+          divAreaRight.appendChild(SolvingArea);
+
+          imageContainer.appendChild(divAreaLeft);
+          imageContainer.appendChild(divAreaRight);
+
+        }
+      };
+    </script>
+  </body>
+</html>
