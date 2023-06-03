@@ -13,14 +13,34 @@ def page_cut(page,s,e,w):
     
     return right, left
 
+def createBground(image):
+    
+    height, width = image.shape[:2]
+    backGround = np.zeros((height, width, 1), dtype=np.uint8)
+
+    return backGround
+
 #화면 자르기 전처리
 def make(image):
-    img=image
+    img = image
     h=[]
     w=[]
     imgray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(imgray,50,200,apertureSize = 3)
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180,100)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180,100,80)
+    
+    # cv2.imshow("gray",imgray)
+    # cv2.imshow("edge", edges)
+    # cv2.waitKey(0)
+    
+    # 라인 그어지는지 확인
+    # bgimg = createBground(image)
+    # for i in lines:
+    #     cv2.line(bgimg, (int(i[0][0]), int(i[0][1])), (int(i[0][2]), int(i[0][3])), (255, 0, 0), 2)
+    # dst = cv2.resize(bgimg, dsize=(0, 0), fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR)
+    # cv2.imshow("line",dst)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     
     # 모의고사 상단 선, 중간 선 검출
     for i in range(len(lines)):
@@ -28,15 +48,25 @@ def make(image):
             if y1 == y2:
                 h.append([x1,y1])
                 h.append([x2,y2])
-            else:
+            if x1 == x2:
                 w.append([x1,y1])
                 w.append([x2,y2])
 
     cv2.line(img,(h[0][0],h[0][1]),(h[1][0],h[1][1]),(0,0,255),1)
     cv2.line(img,(w[0][0],w[0][1]),(w[1][0],w[1][1]),(0,0,255),1)
-    # cv2.imshow('hough',img)
-    # print(h)
-    # print(w)
+    
+    # 모의고사 상단선, 중간 선 검출 되었는지 확인
+    # bgimg = createBground(image)
+    # cv2.line(bgimg,(h[0][0],h[0][1]),(h[1][0],h[1][1]),255,1)
+    # cv2.line(bgimg,(w[0][0],w[0][1]),(w[1][0],w[1][1]),255,1)
+    # dst = cv2.resize(bgimg, dsize=(0, 0), fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR)
+    
+    # cv2.imshow('hough',dst)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    
+    # print((h[0][0],h[0][1]),(h[1][0],h[1][1]))
+    # print((w[0][0],w[0][1]),(w[1][0],w[1][1]))
     
     right, left =page_cut(img,max(h[1][1], h[2][1]),max(w[0][1], w[1][1]),w[0][0])
     
@@ -84,7 +114,10 @@ def find_wrong(page_rl):
     # eges = cv2.Canny(worng_img,0,0,apertureSize = 3)
     
     #일자 라인 추출
+    cv2.imshow("wrongimg",worng_img)
+    cv2.waitKey(0)
     lines = cv2.HoughLinesP(dx,1, np.pi/180,50,minLineLength=80,maxLineGap = 200)
+    print(lines)
     for i in lines:
         cv2.line(page_rl, (int(i[0][0]), int(i[0][1])), (int(i[0][2]), int(i[0][3])), (255, 0, 0), 2)
         # print(i[0])
@@ -95,14 +128,6 @@ def find_wrong(page_rl):
     # 추출된 라인의 rect을 만들기
     #29~35번째 줄 참고해서 만들고 좌표 저장하기()
    
-#원본, 채점 
-origin=cv2.imread("./test/test1.png")
-draw=src1 = cv2.imread("./test/draw.png")
- 
-#자르기   
-right,left=make(origin)
-d_right,d_left=make(draw)
-
 def check_rec(r1, r2):
     tmp1 = r1
     tmp2 = r2
@@ -159,6 +184,24 @@ def find_qu_sangmin(count, rec, page):
     cv2.drawContours(page, cnt_rst, -1, (0,0,255), 1)
     return cnt_rst #틀린문제 좌표
 
+#원본, 채점 
+origin=cv2.imread("./test/test18.png")
+draw=src1 = cv2.imread("./test/KakaoTalk_20230603_210749181.jpg")
+cv2.imshow('right',origin)
+cv2.imshow('left', draw) 
+cv2.waitKey(0)
+ 
+#자르기   
+right,left=make(origin)
+d_right,d_left=make(draw)
+
+cv2.imshow('right',right)
+cv2.imshow('left',left)      
+
+cv2.imshow('dright',d_right)
+cv2.imshow('dleft',d_left)
+cv2.waitKey(0)
+
 count_l = find_question_area(left)
 count_r = find_question_area(right)
 
@@ -167,7 +210,8 @@ line_l = find_wrong(d_left)
 
 rect_r = make_rec(line_r)
 rect_l = make_rec(line_l)
-
+print(rect_l)
+print(rect_r)
 find_qu_sangmin(count_l, rect_l, left)
 find_qu_sangmin(count_r, rect_r, right)
 
@@ -176,6 +220,7 @@ cv2.imshow('left',left)
 
 cv2.imshow('dright',d_right)
 cv2.imshow('dleft',d_left)
+
 
 cv2.waitKey(0)
 
