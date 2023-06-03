@@ -85,6 +85,7 @@ def find_wrong(page_rl):
     
     #일자 라인 추출
     lines = cv2.HoughLinesP(dx,1, np.pi/180,50,minLineLength=80,maxLineGap = 200)
+    print(lines)
     for i in lines:
         cv2.line(page_rl, (int(i[0][0]), int(i[0][1])), (int(i[0][2]), int(i[0][3])), (255, 0, 0), 2)
 
@@ -93,8 +94,8 @@ def find_wrong(page_rl):
     #29~35번째 줄 참고해서 만들고 좌표 저장하기()
    
 #원본, 채점 
-origin=cv2.imread(r"C:\Users\kimga\Desktop\project_HCI\test\test1.png")
-draw=src1 = cv2.imread(r"C:\Users\kimga\Desktop\project_HCI\test\draw.png")
+origin=cv2.imread("./test/test1.png")
+draw=src1 = cv2.imread("./test/draw.png")
  
 #자르기   
 right,left=make(origin)
