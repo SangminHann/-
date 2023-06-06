@@ -60,9 +60,6 @@ def findQuestionArea(page_rl):
 
     #만들어진 좌우 페이지에 문제 영역 표시
     cv2.drawContours(page_rl, contours, -1, (0,255,0), 1)
-    cv2.imshow("page",page_rl)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
     return (contours)
 
@@ -87,7 +84,7 @@ def findCrossInPic(page_rl):
     if lines is not None:
         for line in lines:
             x1, y1, x2, y2 = line[0]
-            cv2.line(page_rl, (x1, y1), (x2, y2), 255, 2)
+            cv2.line(page_rl, (x1, y1), (x2, y2), (255,0,0), 2)
 
 
     return lines
@@ -244,7 +241,7 @@ def trimWrongPic(img_path):
     picture_draw = cv2.imread(img_path)
     picture_draw = cv2.resize(picture_draw, dsize=(841,1190))
     
-    picture = find_origin("./test/picture",picture_draw)
+    picture = find_origin("./test/origin",picture_draw)
     picture = cv2.resize(picture, dsize=(841,1190))
     
     p_right,p_left=make(picture)
@@ -283,7 +280,7 @@ def trimWrongPic(img_path):
     num = str(int(num) - 1)
     return int(num)
 
-
+trimWrongPic('./test/picture_draw.jpg')
 
 #directory에서 origin 이미지 찾기
 # origin=cv2.imread("./test/test4.png")

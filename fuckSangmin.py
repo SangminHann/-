@@ -8,6 +8,7 @@ st.set_page_config(layout="wide", page_title="오답의 정석")
 empty1, con1, empty2 = st.columns([0.3, 1.0, 0.3])
 empyt1, tmp1, con2, tmp2, empty2 = st.columns([0.3, 0.2, 0.6, 0.2, 0.3])
 empty1, con4, con3, empty2 = st.columns([0.5, 0.14, 0.86, 0.5])
+empyt1, tmp1, con6, tmp2, empty2 = st.columns([0.3, 0.2, 0.6, 0.2, 0.3])
 empty1, con5, empty2 = st.columns([0.3, 1.0, 0.3])
 
 display_logo = True
@@ -21,7 +22,7 @@ if display_logo is True:
     with con3:
         genre = st.radio("함수선택", ['사진', 'PDF 변환 파일'], label_visibility = 'hidden', horizontal= True)
         
-    with con2:
+    with con6:
         file_name = st.file_uploader('채점된 문제 파일을 선택해주세요', type=['png', 'jpg', 'jpeg'])
         is_button = st.button('오답노트 만들기')
         
