@@ -81,5 +81,4 @@ def detectEdgeBySobel(image, hue):
 def convert2gray(image):
     imgray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(imgray, ksize=(3,3), sigmaX=0)
-    rst = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1]
-    return rst
+    return blur
