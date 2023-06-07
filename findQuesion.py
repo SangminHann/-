@@ -155,7 +155,7 @@ def templete_match(origin, picture):
 
     methods = ['cv2.TM_CCOEFF_NORMED']
 
-    for method_name in enumerate(methods):
+    for i, method_name in enumerate(methods):
         method = eval(method_name) # 문자열을 함수에 사용하도록 변환
 
         # 템플릿 매칭
