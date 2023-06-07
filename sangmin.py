@@ -118,7 +118,7 @@ def p_find_wrong(page_rl):
     img_hsv= cv2.cvtColor(page_rl, cv2.COLOR_BGR2HSV)
 
     
-    lower_red = np.array([-200, 100, 100])        
+    lower_red = np.array([-200, 100, 100])    
     upper_red = np.array([200, 255, 255])
     
     worng_img=cv2.inRange(img_hsv, lower_red, upper_red)
