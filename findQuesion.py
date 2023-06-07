@@ -4,14 +4,14 @@ import webbrowser
 import cv2
 import os
 
-#화면 자르기 (중앙선 제일 위 s, 아래 e, 좌우 넓이 w)
+# 화면 자르기 (중앙선 제일 위 s, 아래 e, 좌우 넓이 w)
 def page_cut(page,s,e,w):
     left =  page[s+2:e, :w-2]
     right= page[s+2:e, w+2:w+w]
 
     return right, left
 
-#화면 자르기 전처리
+# 화면 자르기 전처리
 def make(image):
     h=[]
     w=[]
@@ -63,7 +63,7 @@ def findQuestionArea(page_rl):
 
     return (contours)
 
-# /혹은 X모양 찾기(좌우로 잘린 풀이된 문제)
+# pdf파일 형식의 채점된 문제지에서 /혹은 X모양 찾기(좌우로 잘린 풀이된 문제)
 def findCross(page_rl):
 
     dx = df.detectEdgeBySobel(page_rl, 30)
@@ -75,6 +75,7 @@ def findCross(page_rl):
 
     return lines
 
+# 채점된 문제지의 사진을 /혹은 X모양 찾기(좌우로 잘린 풀이된 문제)
 def findCrossInPic(page_rl):
 
     dx = df.detectEdgeBySobel(page_rl, 200)
@@ -89,8 +90,8 @@ def findCrossInPic(page_rl):
 
     return lines
 
-
-def check_rec(r1, r2):
+# 사각형이 겹치는지 확인
+def is_rec_overlap(r1, r2):
     tmp1 = r1
     tmp2 = r2
 
@@ -110,7 +111,7 @@ def check_rec(r1, r2):
         return False
     return True
 
-
+# 대각선 양 끝점으로 사각형 만들기
 def make_rec(lines):
     if lines is None : return None
     rect=[]
@@ -120,7 +121,7 @@ def make_rec(lines):
             rect = line[0]
         else:
             for r in rect:
-                if check_rec(line[0],r):
+                if is_rec_overlap(line[0],r):
                     flag = False
                 if flag is False:
                     break
@@ -129,7 +130,7 @@ def make_rec(lines):
 
     return rect
 
-#문제영역 표시
+# 틀린 문제 영역 찾기
 def findWrong(count, rec, page):
     if rec is None: return None
     cnt_rst = []
@@ -139,7 +140,7 @@ def findWrong(count, rec, page):
         rec_c = [x, y + h, x + w, y]
         for r in rec:
 
-            if check_rec(rec_c, r):
+            if is_rec_overlap(rec_c, r):
                 flag = True
             if flag:
                 cnt_rst.append(c)
@@ -149,14 +150,15 @@ def findWrong(count, rec, page):
     cv2.drawContours(page, cnt_rst, -1, (255,255,255), 1)
     return cnt_rst #틀린문제 좌표
 
+# picture과 orgin의 유사도 출력
 def templete_match(origin, picture):
 
     methods = ['cv2.TM_CCOEFF_NORMED']
 
-    for i, method_name in enumerate(methods):
+    for method_name in enumerate(methods):
         method = eval(method_name) # 문자열을 함수에 사용하도록 변환
 
-         # 템플릿 매칭
+        # 템플릿 매칭
         res = cv2.matchTemplate(picture, origin, method)
 
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
@@ -169,12 +171,7 @@ def templete_match(origin, picture):
 
     return match_val
 
-def deleteAllFiles(directory):
-    for filename in os.listdir(directory):
-        file_path = os.path.join(directory, filename)
-        if os.path.isfile(file_path):
-            os.remove(file_path)
-
+# 채점된 이미지파일로 원본 이미지파일 찾기
 def find_origin(origin_dir, draw):
     val_list = []
 
@@ -187,7 +184,6 @@ def find_origin(origin_dir, draw):
         val= templete_match(origin_img, draw)
         val_list.append((val,origin_img))
 
-
     # print(val_list)
 
     val_list.sort(reverse=True)
@@ -195,8 +191,14 @@ def find_origin(origin_dir, draw):
     #내림차순 정렬한 튜플에서 image 반환
     return val_list[0][1]
 
+# 틀린 문제파일들을 지움
+def deleteAllFiles(directory):
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
 
-#원본, 채점
+# 채점된 이미지 파일에서 틀린 문제들을 뽑아내 ./test/wrong 디렉토리에 저장 (pdf)
 def trimWrongImg(image_path):
 
     draw = cv2.imread(image_path)
@@ -236,6 +238,7 @@ def trimWrongImg(image_path):
     num = str(int(num) - 1)
     return int(num)
 
+# 채점된 이미지 파일에서 틀린 문제들을 뽑아내 ./test/wrong 디렉토리에 저장 (사진)
 def trimWrongPic(img_path):
     
     picture_draw = cv2.imread(img_path)
@@ -279,45 +282,3 @@ def trimWrongPic(img_path):
 
     num = str(int(num) - 1)
     return int(num)
-
-trimWrongPic('./test/picture_draw.jpg')
-
-#directory에서 origin 이미지 찾기
-# origin=cv2.imread("./test/test4.png")
-
-
-
-#사진, 사진채점
-
-
-# 
-
-
-#자르기
-
-
-
-
-
-
-
-
-
-
-
-
-# for i in range(len())
-
-# # cv2.imshow('o_right',o_right)
-# # cv2.imshow('o_left',o_left)
-
-# # cv2.imshow('p_right',p_right)
-# # cv2.imshow('p_left',p_left)
-
-# # cv2.imshow('d_right',d_right)
-# # cv2.imshow('d_left',d_left)
-
-# # cv2.imshow('pd_right',pd_right)
-# # cv2.imshow('pd_left',pd_left)
-
-# # cv2.waitKey(0)
