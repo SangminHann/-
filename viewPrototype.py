@@ -8,6 +8,8 @@ st.set_page_config(layout="wide", page_title="오답의 정석")
 empty1, con1, empty2 = st.columns([0.3, 1.0, 0.3])
 empty1, con2, con3, empty2 = st.columns([0.5, 0.14, 0.86, 0.5])
 empyt1, tmp1, con4, tmp2, empty2 = st.columns([0.3, 0.2, 0.6, 0.2, 0.3])
+empyt1, tmp1, button_con, check_con, tmp2, empty2 = st.columns([0.3, 0.2, 0.3, 0.3, 0.2, 0.3])
+empyt1, upload_con, empty2 = st.columns([0.3, 1.0, 0.3])
 empty1, con5, empty2 = st.columns([0.3, 1.0, 0.3])
 
 display_logo = True
@@ -23,22 +25,34 @@ if display_logo is True:
         
     with con4:
         file_name = st.file_uploader('채점된 문제 파일을 선택해주세요', type=['png', 'jpg', 'jpeg'])
+    
+    with button_con:
         is_button = st.button('오답노트 만들기')
         
-        if file_name is not None:
+    with check_con:
+        check = False
+        check = st.checkbox(label = '업로드 파일 보기')
+        
+    if file_name is not None and check is True:
+        with upload_con:
             st.image(directory + file_name.name)
-            
-        if is_button and genre is None:
+    
+    if file_name is not None and check is True:
+        with upload_con:
+            st.text('업로드 된 파일이 없습니다.')
+    
+    if is_button and genre is None:
+        with con3:
             st.markdown(p_open_tag + '파일 유형을 선택해 주세요' + p_close_tag, unsafe_allow_html = True)
             
-        if is_button : 
-            if file_name is not None:
-                display_logo = False
+    if is_button : 
+        if file_name is not None:
+            display_logo = False
                 
-            else:
-                st.markdown(p_open_tag + '선택된 문제가 없습니다' + p_close_tag, unsafe_allow_html = True)
+        else:
+            with con4:
                 st.text('선택된 문제가 없습니다')
-                is_button = False
+            is_button = False
                 
 if display_logo is False and genre == 'PDF 변환 파일':
     file_dir = './test/wrong/'
